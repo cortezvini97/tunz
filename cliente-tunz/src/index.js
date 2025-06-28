@@ -12,7 +12,7 @@ program
 program
   .argument('<protocolo>', 'Protocolo da aplicação local (http ou https)')
   .argument('<url_do_computador_do_usuario>', 'URL completa da aplicação no seu computador (ex: http://localhost:3000, https://127.0.0.1:8080)')
-  .option('-s, --server <server>', 'Servidor do túnel', 'https://tunz.vcinsidedigital.com') //AQUI DEFINIMOS A URL DO SERVIDOR
+  .option('-s, --server <server>', 'Servidor do túnel', 'http://<YOUR_SERVER_URL>') //AQUI DEFINIMOS A URL DO SERVIDOR
   .option('-l, --slug <slug>', 'Slug customizado (3-20 caracteres)')
   .option('-v, --verbose', 'Modo verboso')
   .action(async (protocolo, url_do_computador_do_usuario, options) => {
@@ -58,7 +58,7 @@ program
 program
   .command('list')
   .description('Listar túneis ativos')
-  .option('-s, --server <server>', 'Servidor do túnel', 'https://tunz.vcinsidedigital.com')
+  .option('-s, --server <server>', 'Servidor do túnel', 'http://<YOUR_SERVER_URL>') //AQUI DEFINIMOS A URL DO SERVIDOR
   .action(async (options) => {
     try {
       const client = new TunzClient({
@@ -75,7 +75,7 @@ program
 program
   .command('login')
   .description('Fazer login no servidor Tunz')
-  .option('-s, --server <server>', 'Servidor do túnel', 'https://tunz.vcinsidedigital.com')
+  .option('-s, --server <server>', 'Servidor do túnel', 'http://<YOUR_SERVER_URL>') //AQUI DEFINIMOS A URL DO SERVIDOR
   .option('-e, --email <email>', 'Email do usuário')
   .option('-p, --password <password>', 'Senha do usuário')
   .action(async (options) => {
@@ -94,7 +94,7 @@ program
 program
   .command('get-tunels')
   .description('Exibir todos os túneis do usuário atual')
-  .option('-s, --server <server>', 'Servidor do túnel', 'https://tunz.vcinsidedigital.com')
+  .option('-s, --server <server>', 'Servidor do túnel', 'http://<YOUR_SERVER_URL>') //AQUI DEFINIMOS A URL DO SERVIDOR
   .option('-v, --verbose', 'Modo verboso')
   .action(async (options) => {
     try {
@@ -114,7 +114,7 @@ program
   .command('connect')
   .description('Conectar em um túnel específico do usuário')
   .argument('<tunnel_id>', 'ID do túnel para conectar')
-  .option('-s, --server <server>', 'Servidor do túnel', 'https://tunz.vcinsidedigital.com')
+  .option('-s, --server <server>', 'Servidor do túnel', 'http://<YOUR_SERVER_URL>') //AQUI DEFINIMOS A URL DO SERVIDOR
   .option('-v, --verbose', 'Modo verboso')
   .action(async (tunnel_id, options) => {
     try {

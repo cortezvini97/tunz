@@ -9,7 +9,7 @@ const readline = require('readline');
 
 class TunzClient {
   constructor(options = {}) {
-    this.serverUrl = options.serverUrl || 'http://localhost:7070';
+    this.serverUrl = options.serverUrl || 'http://<YOUR_SERVER_URL>'; //AQUI DEFINIMOS A URL DO SERVIDOR
     this.verbose = options.verbose || false;
     this.socket = null;
     this.tunnel = null;

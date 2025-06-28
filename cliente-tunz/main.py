@@ -1,4 +1,3 @@
-
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
@@ -38,60 +37,121 @@ def backup_file(file_path):
         return True
     return False
 
-def update_server_url(new_url):
-    """Atualiza a URL do servidor no arquivo index.js"""
-    print("🔧 Atualizando URL do servidor...")
-    
-    index_path = "src/index.js"
-    
-    if not os.path.exists(index_path):
-        print(f"❌ Arquivo não encontrado: {index_path}")
-        return False
+def update_server_url_in_file(file_path, new_url):
+    """Atualiza a URL do servidor em um arquivo específico"""
+    if not os.path.exists(file_path):
+        print(f"⚠️  Arquivo não encontrado: {file_path}")
+        return False, 0
     
     # Fazer backup
-    backup_file(index_path)
+    backup_file(file_path)
     
     # Ler conteúdo do arquivo
     try:
-        with open(index_path, 'r', encoding='utf-8') as f:
+        with open(file_path, 'r', encoding='utf-8') as f:
             content = f.read()
         
-        # Padrão regex para encontrar a linha com o comentário
-        # Captura qualquer URL entre aspas na linha que termina com o comentário específico
-        pattern = r"(.option\('-s, --server <server>', 'Servidor do túnel', ')([^']+)('\) //AQUI DEFINIMOS A URL DO SERVIDOR)"
+        # Padrão regex mais flexível para encontrar a linha com o comentário
+        # Captura qualquer URL entre aspas/apostrofes na linha que termina com o comentário específico
+        patterns = [
+            # Para .option() com aspas simples
+            r"(\.option\('-s, --server <server>', 'Servidor do túnel', ')([^']+)('\) //AQUI DEFINIMOS A URL DO SERVIDOR)",
+            # Para .option() com aspas duplas
+            r'(\.option\("-s, --server <server>", "Servidor do túnel", ")([^"]+)("\) //AQUI DEFINIMOS A URL DO SERVIDOR)',
+            # Para variáveis ou outras configurações com aspas simples
+            r"(serverUrl:\s*')([^']+)('\s*,?\s*//AQUI DEFINIMOS A URL DO SERVIDOR)",
+            # Para variáveis ou outras configurações com aspas duplas
+            r'(serverUrl:\s*")([^"]+)("\s*,?\s*//AQUI DEFINIMOS A URL DO SERVIDOR)',
+            # Para this.serverUrl = 'url' com aspas simples
+            r"(this\.serverUrl\s*=\s*options\.serverUrl\s*\|\|\s*')([^']+)('\s*;\s*//AQUI DEFINIMOS A URL DO SERVIDOR)",
+            # Para this.serverUrl = "url" com aspas duplas
+            r'(this\.serverUrl\s*=\s*options\.serverUrl\s*\|\|\s*")([^"]+)("\s*;\s*//AQUI DEFINIMOS A URL DO SERVIDOR)',
+            # Para atribuições simples this.serverUrl = 'url'
+            r"(this\.serverUrl\s*=\s*')([^']+)('\s*;\s*//AQUI DEFINIMOS A URL DO SERVIDOR)",
+            r'(this\.serverUrl\s*=\s*")([^"]+)("\s*;\s*//AQUI DEFINIMOS A URL DO SERVIDOR)',
+            # Padrão genérico para capturar <YOUR_SERVER_URL> ou outras URLs
+            r"(['\"])([^'\"]*(?:YOUR_SERVER_URL|https?://[^'\"]*))(['\"].*?//AQUI DEFINIMOS A URL DO SERVIDOR)"
+        ]
         
-        # Função de substituição que mantém tudo igual exceto a URL
-        def replace_url(match):
-            return match.group(1) + new_url + match.group(3)
+        total_count = 0
+        updated_content = content
+        matches_found = []
         
-        # Contar quantas ocorrências existem
-        matches = re.findall(pattern, content)
-        count = len(matches)
-        
-        if count > 0:
-            # Substituir todas as ocorrências usando regex
-            updated_content = re.sub(pattern, replace_url, content)
+        # Processar cada padrão
+        for i, pattern in enumerate(patterns):
+            # Encontrar todas as correspondências para este padrão
+            current_matches = list(re.finditer(pattern, updated_content))
             
+            if current_matches:
+                print(f"      🔍 Padrão {i+1}: encontradas {len(current_matches)} ocorrência(s)")
+                
+                for match in current_matches:
+                    # Extrair a URL atual
+                    groups = match.groups()
+                    if len(groups) >= 3:
+                        old_url = groups[1]
+                        matches_found.append(old_url)
+                        print(f"         • '{old_url}' → '{new_url}'")
+                
+                # Aplicar substituição para este padrão
+                def replace_url(match_obj):
+                    groups = match_obj.groups()
+                    if len(groups) >= 3:
+                        return groups[0] + new_url + groups[2]
+                    return match_obj.group(0)
+                
+                updated_content = re.sub(pattern, replace_url, updated_content)
+                total_count += len(current_matches)
+        
+        if total_count > 0:
             # Salvar arquivo atualizado
-            with open(index_path, 'w', encoding='utf-8') as f:
+            with open(file_path, 'w', encoding='utf-8') as f:
                 f.write(updated_content)
             
-            print(f"✅ {count} ocorrências atualizadas para: {new_url}")
-            
-            # Mostrar as linhas que foram alteradas (para debug)
-            for i, match in enumerate(matches, 1):
-                old_url = match[1]
-                print(f"   {i}. '{old_url}' → '{new_url}'")
-            
-            return True
+            print(f"   ✅ {total_count} ocorrência(s) atualizadas em {file_path}")
+            return True, total_count
         else:
-            print(f"ℹ️  Nenhuma linha com o comentário '//AQUI DEFINIMOS A URL DO SERVIDOR' encontrada")
-            print("💡 Certifique-se de que existe uma linha como:")
-            print("   .option('-s, --server <server>', 'Servidor do túnel', 'http://localhost:7070') //AQUI DEFINIMOS A URL DO SERVIDOR")
-            return False
+            print(f"   ℹ️  Nenhuma ocorrência encontrada em {file_path}")
+            return False, 0
             
     except Exception as e:
-        print(f"❌ Erro ao atualizar arquivo: {str(e)}")
+        print(f"   ❌ Erro ao processar {file_path}: {str(e)}")
+        return False, 0
+
+def update_server_url(new_url):
+    """Atualiza a URL do servidor em todos os arquivos relevantes"""
+    print("🔧 Atualizando URL do servidor em todos os arquivos...")
+    
+    # Lista de arquivos para verificar
+    files_to_check = [
+        "src/index.js",
+        "src/client.js",
+        "src/index.js.backup"  # Verificar backup também se existir
+    ]
+    
+    total_files_updated = 0
+    total_occurrences = 0
+    
+    for file_path in files_to_check:
+        if os.path.exists(file_path):
+            print(f"📄 Processando {file_path}...")
+            success, count = update_server_url_in_file(file_path, new_url)
+            if success:
+                total_files_updated += 1
+                total_occurrences += count
+    
+    if total_files_updated > 0:
+        print(f"✅ Atualização concluída!")
+        print(f"   📁 Arquivos atualizados: {total_files_updated}")
+        print(f"   🔄 Total de ocorrências: {total_occurrences}")
+        print(f"   🌐 Nova URL: {new_url}")
+        return True
+    else:
+        print("ℹ️  Nenhuma atualização foi necessária.")
+        print("💡 Certifique-se de que existe uma linha como:")
+        print("   .option('-s, --server <server>', 'Servidor do túnel', 'http://localhost:7070') //AQUI DEFINIMOS A URL DO SERVIDOR")
+        print("   ou")
+        print("   this.serverUrl = options.serverUrl || 'http://localhost:7070'; //AQUI DEFINIMOS A URL DO SERVIDOR")
         return False
 
 def run_command(cmd, description=""):
@@ -213,24 +273,143 @@ Uso:
 Opções:
   --configure, -c    Configurar URL do servidor e compilar
   --build, -b        Compilar com configurações atuais
+  --test, -t         Testar substituição sem compilar
+  --examples, -e     Mostrar exemplos de linhas processadas
   --help, -h         Mostrar esta ajuda
 
 Exemplos:
   python main.py --configure    # Configurar servidor e compilar
   python main.py --build        # Compilar apenas
+  python main.py --test         # Testar substituição de URLs
+  python main.py --examples     # Ver exemplos de padrões
   python main.py                # Compilar apenas (padrão)
 
 Descrição:
   Este script permite configurar a URL do servidor Tunz no código
   fonte e compilar o cliente para um executável standalone.
+  
+  O script procura por linhas que contenham o comentário:
+  //AQUI DEFINIMOS A URL DO SERVIDOR
+  
+  E substitui a URL configurada nessas linhas nos arquivos:
+  - src/index.js
+  - src/client.js
+  - src/index.js.backup (se existir)
 """
     print(help_text)
+
+def show_examples():
+    """Mostra exemplos de linhas que serão processadas"""
+    print("📝 Exemplos de linhas que serão processadas:")
+    print()
+    print("1. Comando .option() no index.js:")
+    print("   .option('-s', '--server <server>', 'Servidor do túnel', 'https://old-url.com') //AQUI DEFINIMOS A URL DO SERVIDOR")
+    print("   →")
+    print("   .option('-s', '--server <server>', 'Servidor do túnel', 'https://new-url.com') //AQUI DEFINIMOS A URL DO SERVIDOR")
+    print()
+    print("2. Atribuição de variável no client.js:")
+    print("   this.serverUrl = options.serverUrl || 'http://localhost:7070'; //AQUI DEFINIMOS A URL DO SERVIDOR")
+    print("   →") 
+    print("   this.serverUrl = options.serverUrl || 'https://new-url.com'; //AQUI DEFINIMOS A URL DO SERVIDOR")
+    print()
+    print("3. Placeholder genérico:")
+    print("   .option('-s', '--server <server>', 'Servidor do túnel', '<YOUR_SERVER_URL>') //AQUI DEFINIMOS A URL DO SERVIDOR")
+    print("   →")
+    print("   .option('-s', '--server <server>', 'Servidor do túnel', 'https://new-url.com') //AQUI DEFINIMOS A URL DO SERVIDOR")
+    print()
+
+def test_url_replacement():
+    """Testa a substituição de URLs sem fazer alterações"""
+    print("🧪 Modo de teste - nenhuma alteração será salva")
+    print()
+    
+    while True:
+        test_url = input("🌐 Digite uma URL de teste (ex: https://teste.exemplo.com): ").strip()
+        
+        if not test_url:
+            print("❌ URL não pode estar vazia!")
+            continue
+        
+        # Validar URL
+        is_valid, error_msg = validate_url(test_url)
+        if not is_valid:
+            print(f"❌ {error_msg}")
+            continue
+        
+        break
+    
+    print()
+    print("🔍 Procurando por padrões nos arquivos...")
+    
+    # Lista de arquivos para verificar
+    files_to_check = [
+        "src/index.js",
+        "src/client.js",
+        "src/index.js.backup"
+    ]
+    
+    total_files_found = 0
+    total_occurrences = 0
+    
+    for file_path in files_to_check:
+        if os.path.exists(file_path):
+            print(f"\n📄 Analisando {file_path}...")
+            
+            try:
+                with open(file_path, 'r', encoding='utf-8') as f:
+                    content = f.read()
+                
+                # Procurar pelo comentário
+                lines_with_comment = []
+                for i, line in enumerate(content.split('\n'), 1):
+                    if '//AQUI DEFINIMOS A URL DO SERVIDOR' in line:
+                        lines_with_comment.append((i, line.strip()))
+                
+                if lines_with_comment:
+                    total_files_found += 1
+                    total_occurrences += len(lines_with_comment)
+                    
+                    print(f"   ✅ Encontradas {len(lines_with_comment)} linha(s) com o comentário:")
+                    for line_num, line_content in lines_with_comment:
+                        print(f"      Linha {line_num}: {line_content}")
+                        
+                        # Simular a substituição
+                        if "'" in line_content:
+                            old_url_match = re.search(r"'([^']*)'", line_content)
+                            if old_url_match:
+                                old_url = old_url_match.group(1)
+                                new_line = line_content.replace(f"'{old_url}'", f"'{test_url}'")
+                                print(f"         → {new_line}")
+                        elif '"' in line_content:
+                            old_url_match = re.search(r'"([^"]*)"', line_content)
+                            if old_url_match:
+                                old_url = old_url_match.group(1)
+                                new_line = line_content.replace(f'"{old_url}"', f'"{test_url}"')
+                                print(f"         → {new_line}")
+                else:
+                    print(f"   ℹ️  Nenhuma linha encontrada com o comentário")
+                    
+            except Exception as e:
+                print(f"   ❌ Erro ao processar {file_path}: {str(e)}")
+        else:
+            print(f"⚠️  Arquivo não encontrado: {file_path}")
+    
+    print(f"\n📊 Resumo do teste:")
+    print(f"   📁 Arquivos com padrões: {total_files_found}")
+    print(f"   🔄 Total de ocorrências: {total_occurrences}")
+    print(f"   🌐 URL de teste: {test_url}")
+    print()
+    print("💡 Para aplicar as mudanças, use: python main.py --configure")
+    
+    return True
 
 def main():
     """Função principal"""
     parser = argparse.ArgumentParser(add_help=False)
     parser.add_argument('--configure', '-c', action='store_true', help='Configurar servidor e compilar')
     parser.add_argument('--build', '-b', action='store_true', help='Compilar com configurações atuais')
+    parser.add_argument('--test', '-t', action='store_true', help='Testar substituição sem compilar')
+    parser.add_argument('--examples', '-e', action='store_true', help='Mostrar exemplos de linhas processadas')
     parser.add_argument('--help', '-h', action='store_true', help='Mostrar ajuda')
     
     args = parser.parse_args()
@@ -241,6 +420,14 @@ def main():
         show_help()
         return 0
     
+    if args.examples:
+        show_examples()
+        return 0
+    
+    if args.test:
+        success = test_url_replacement()
+        return 0 if success else 1
+    
     success = True
     
     if args.configure:
@@ -250,7 +437,7 @@ def main():
         print()
     
     # Compilar (padrão se nenhuma opção específica for dada)
-    if args.build or not (args.configure or args.help):
+    if args.build or not (args.configure or args.help or args.test or args.examples):
         success = build_executable()
     
     if success:
