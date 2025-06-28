@@ -1,0 +1,43 @@
+{
+  "name": "tunz",
+  "version": "1.0.0",
+  "description": "Cliente de linha de comando para criar túneis com o servidor Tunz",
+  "main": "src/index.js",
+  "bin": {
+    "tunz": "./src/index.js"
+  },
+  "scripts": {
+    "start": "node src/index.js",
+    "link": "npm link",
+    "test": "node src/index.js http http://localhost:8000",
+    "build": "pkg . --out-path dist",
+    "build-win": "pkg . --targets node14-win-x64 --out-path dist"
+  },
+  "dependencies": {
+    "axios": "^1.5.0",
+    "chalk": "^4.1.2",
+    "commander": "^11.0.0",
+    "ora": "^5.4.1",
+    "socket.io-client": "^4.7.2"
+  },
+  "keywords": [
+    "tunnel",
+    "cli",
+    "proxy",
+    "ngrok",
+    "local-development"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "pkg": "^5.8.1"
+  },
+  "pkg": {
+    "targets": [
+      "node16-win-x64"
+    ],
+    "assets": [
+      "node_modules/**/*"
+    ]
+  }
+}

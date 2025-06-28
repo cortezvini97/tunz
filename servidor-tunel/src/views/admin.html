@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel Administrativo - Tunz</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f8f9fa;
+            color: #333;
+        }
+        
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .navbar-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .navbar h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+        
+        .navbar-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: rgba(255,255,255,0.1);
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+        
+        .btn-logout {
+            padding: 0.5rem 1rem;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background 0.3s ease;
+        }
+        
+        .btn-logout:hover {
+            background: rgba(255,255,255,0.3);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+        
+        .tabs {
+            display: flex;
+            background: white;
+            border-radius: 10px 10px 0 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .tab {
+            flex: 1;
+            padding: 1rem 2rem;
+            background: #f8f9fa;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border-bottom: 3px solid transparent;
+        }
+        
+        .tab.active {
+            background: white;
+            border-bottom-color: #667eea;
+            color: #667eea;
+        }
+        
+        .tab:hover:not(.active) {
+            background: #e9ecef;
+        }
+        
+        .tab-content {
+            display: none;
+            background: white;
+            padding: 2rem;
+            border-radius: 0 0 10px 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            min-height: 500px;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.2);
+        }
+        
+        .stat-card h3 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+        }
+        
+        .stat-card p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .table-container {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #495057;
+        }
+        
+        tr:hover {
+            background: #f8f9fa;
+        }
+        
+        .status {
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        .status-active {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status-inactive {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .status-connected {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+        
+        .status-disconnected {
+            background: #f5c6cb;
+            color: #721c24;
+        }
+        
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .btn-primary {
+            background: #007bff;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #0056b3;
+        }
+        
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #1e7e34;
+        }
+        
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #c82333;
+        }
+        
+        .btn-warning {
+            background: #ffc107;
+            color: #212529;
+        }
+        
+        .btn-warning:hover {
+            background: #e0a800;
+        }
+        
+        .btn-sm {
+            padding: 0.3rem 0.6rem;
+            font-size: 0.8rem;
+        }
+        
+        .alert {
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            font-weight: 500;
+        }
+        
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .alert-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: #6c757d;
+        }
+        
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #6c757d;
+        }
+        
+        .empty-state h3 {
+            margin-bottom: 1rem;
+            color: #495057;
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .recent-activity-title {
+            margin-bottom: 1rem;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 1rem;
+            }
+            
+            .navbar-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .tabs {
+                flex-direction: column;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            table {
+                font-size: 0.9rem;
+            }
+            
+            th, td {
+                padding: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-content">
+            <h1>🚀 Painel Administrativo - Tunz</h1>
+            <div class="navbar-actions">
+                <div class="user-info">
+                    <span>👤</span>
+                    <span id="userName">Carregando...</span>
+                </div>
+                <button class="btn-logout" onclick="logout()">Sair</button>
+            </div>
+        </div>
+    </nav>
+    
+    <div class="container">
+        <div id="alert"></div>
+        
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('dashboard')">📊 Dashboard</button>
+            <button class="tab" onclick="switchTab('users')">👥 Usuários</button>
+            <button class="tab" onclick="switchTab('tunnels')">🌐 Túneis</button>
+        </div>
+        
+        <!-- Dashboard Tab -->
+        <div id="dashboard" class="tab-content active">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3 id="totalUsers">0</h3>
+                    <p>Total de Usuários</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="activeUsers">0</h3>
+                    <p>Usuários Ativos</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="totalTunnels">0</h3>
+                    <p>Total de Túneis</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="activeTunnels">0</h3>
+                    <p>Túneis Conectados</p>
+                </div>
+            </div>
+            
+            <h2 class="recent-activity-title">📈 Atividade Recente</h2>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Usuário</th>
+                            <th>Ação</th>
+                            <th>Data</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="recentActivity">
+                        <tr>
+                            <td colspan="4" class="loading">
+                                <div class="spinner"></div>
+                                Carregando atividades...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Users Tab -->
+        <div id="users" class="tab-content">
+            <div class="section-header">
+                <h2>👥 Gerenciamento de Usuários</h2>
+                <button class="btn btn-primary" onclick="refreshUsers()">🔄 Atualizar</button>
+            </div>
+            
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nome</th>
+                            <th>Email</th>
+                            <th>Tipo</th>
+                            <th>Status</th>
+                            <th>Criado em</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="usersTable">
+                        <tr>
+                            <td colspan="7" class="loading">
+                                <div class="spinner"></div>
+                                Carregando usuários...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Tunnels Tab -->
+        <div id="tunnels" class="tab-content">
+            <div class="section-header">
+                <h2>🌐 Gerenciamento de Túneis</h2>
+                <button class="btn btn-primary" onclick="refreshTunnels()">🔄 Atualizar</button>
+            </div>
+            
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Slug</th>
+                            <th>URL Pública</th>
+                            <th>URL Local</th>
+                            <th>Status</th>
+                            <th>Slug Customizado</th>
+                            <th>Criado em</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tunnelsTable">
+                        <tr>
+                            <td colspan="7" class="loading">
+                                <div class="spinner"></div>
+                                Carregando túneis...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentUser = null;
+        let users = [];
+        let tunnels = [];
+        
+        // Verificar autenticação ao carregar
+        document.addEventListener('DOMContentLoaded', function() {
+            checkAuth();
+        });
+        
+        async function checkAuth() {
+            const token = localStorage.getItem('authToken');
+            
+            if (!token) {
+                window.location.href = '/login';
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/auth/verify', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Token inválido');
+                }
+                
+                const data = await response.json();
+                currentUser = data.user;
+                
+                // Verificar se é admin
+                if (currentUser.role !== 'admin') {
+                    showAlert('Acesso negado. Apenas administradores podem acessar este painel.', 'error');
+                    setTimeout(() => {
+                        window.location.href = '/dashboard';
+                    }, 2000);
+                    return;
+                }
+                
+                document.getElementById('userName').textContent = currentUser.name;
+                loadDashboard();
+                
+            } catch (error) {
+                console.error('Erro de autenticação:', error);
+                localStorage.removeItem('authToken');
+                window.location.href = '/login';
+            }
+        }
+        
+        async function loadDashboard() {
+            await Promise.all([
+                loadUsers(),
+                loadTunnels()
+            ]);
+            
+            updateStats();
+            loadRecentActivity();
+        }
+        
+        async function loadUsers() {
+            try {
+                const token = localStorage.getItem('authToken');
+                const response = await fetch('/api/admin/users', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Erro ao carregar usuários');
+                }
+                
+                users = await response.json();
+                renderUsers();
+                
+            } catch (error) {
+                console.error('Erro ao carregar usuários:', error);
+                showAlert('Erro ao carregar usuários: ' + error.message, 'error');
+            }
+        }
+        
+        async function loadTunnels() {
+            try {
+                const token = localStorage.getItem('authToken');
+                const response = await fetch('/api/dashboard/tunnels', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Erro ao carregar túneis');
+                }
+                
+                tunnels = await response.json();
+                renderTunnels();
+                
+            } catch (error) {
+                console.error('Erro ao carregar túneis:', error);
+                showAlert('Erro ao carregar túneis: ' + error.message, 'error');
+            }
+        }
+        
+        function updateStats() {
+            const totalUsers = users.length;
+            const activeUsers = users.filter(u => u.isActive === true).length;
+            const totalTunnels = tunnels.length;
+            const activeTunnels = tunnels.filter(t => t.status === 'connected').length;
+            
+            document.getElementById('totalUsers').textContent = totalUsers;
+            document.getElementById('activeUsers').textContent = activeUsers;
+            document.getElementById('totalTunnels').textContent = totalTunnels;
+            document.getElementById('activeTunnels').textContent = activeTunnels;
+        }
+        
+        function renderUsers() {
+            const tbody = document.getElementById('usersTable');
+            
+            if (users.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="empty-state">
+                            <h3>Nenhum usuário encontrado</h3>
+                            <p>Não há usuários cadastrados no sistema.</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            tbody.innerHTML = users.map(user => `
+                <tr>
+                    <td>${user.id}</td>
+                    <td>${user.name}</td>
+                    <td>${user.email}</td>
+                    <td><span class="status ${user.role === 'admin' ? 'status-active' : 'status-pending'}">${user.role}</span></td>
+                    <td>
+                        <span class="status ${getStatusClass(user.isActive)}">
+                            ${getStatusText(user.isActive)}
+                        </span>
+                    </td>
+                    <td>${formatDate(user.createdAt)}</td>
+                    <td>
+                        ${user.id !== currentUser.id ? `
+                            <button class="btn btn-sm ${user.isActive === true ? 'btn-danger' : 'btn-success'}" 
+                                    onclick="toggleUserStatus(${user.id}, ${user.isActive === true})">
+                                ${user.isActive === true ? 'Desativar' : 'Ativar'}
+                            </button>
+                        ` : '<span style="color: #6c757d; font-style: italic;">Você</span>'}
+                    </td>
+                </tr>
+            `).join('');
+        }
+        
+        function renderTunnels() {
+            const tbody = document.getElementById('tunnelsTable');
+            
+            if (tunnels.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="empty-state">
+                            <h3>Nenhum túnel encontrado</h3>
+                            <p>Não há túneis ativos no sistema.</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            tbody.innerHTML = tunnels.map(tunnel => `
+                <tr>
+                    <td>${tunnel.id}</td>
+                    <td>${tunnel.slug}</td>
+                    <td><a href="${tunnel.publicUrl}" target="_blank">${tunnel.publicUrl}</a></td>
+                    <td>${tunnel.localUrl}</td>
+                    <td>
+                        <span class="status ${tunnel.status === 'connected' ? 'status-connected' : 'status-disconnected'}">
+                            ${tunnel.status}
+                        </span>
+                    </td>
+                    <td>${tunnel.isCustomSlug ? '✅ Sim' : '❌ Não'}</td>
+                    <td>${formatDate(tunnel.createdAt)}</td>
+                </tr>
+            `).join('');
+        }
+        
+        function loadRecentActivity() {
+            // Simular atividade recente (isso seria vindo de um log real)
+            const activities = [
+                { user: 'Sistema', action: 'Servidor iniciado', date: new Date(), status: 'success' },
+                { user: currentUser.name, action: 'Login administrativo', date: new Date(), status: 'info' }
+            ];
+            
+            const tbody = document.getElementById('recentActivity');
+            tbody.innerHTML = activities.map(activity => `
+                <tr>
+                    <td>${activity.user}</td>
+                    <td>${activity.action}</td>
+                    <td>${formatDate(activity.date)}</td>
+                    <td><span class="status status-${activity.status === 'success' ? 'active' : 'pending'}">${activity.status}</span></td>
+                </tr>
+            `).join('');
+        }
+        
+        async function toggleUserStatus(userId, isCurrentlyActive) {
+            const action = isCurrentlyActive ? 'desativar' : 'ativar';
+            
+            if (!confirm(`Tem certeza que deseja ${action} este usuário?`)) {
+                return;
+            }
+            
+            try {
+                const token = localStorage.getItem('authToken');
+                const response = await fetch(`/api/admin/users/${userId}/status`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        isActive: !isCurrentlyActive
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Erro ao alterar status do usuário');
+                }
+                
+                const result = await response.json();
+                showAlert(`Usuário ${action === 'ativar' ? 'ativado' : 'desativado'} com sucesso!`, 'success');
+                
+                // Recarregar usuários
+                await loadUsers();
+                updateStats();
+                
+            } catch (error) {
+                console.error('Erro ao alterar status:', error);
+                showAlert('Erro ao alterar status do usuário: ' + error.message, 'error');
+            }
+        }
+        
+        function switchTab(tabName) {
+            // Remover classe active de todas as abas
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            // Ativar aba selecionada
+            event.target.classList.add('active');
+            document.getElementById(tabName).classList.add('active');
+        }
+        
+        async function refreshUsers() {
+            await loadUsers();
+            updateStats();
+            showAlert('Lista de usuários atualizada!', 'success');
+        }
+        
+        async function refreshTunnels() {
+            await loadTunnels();
+            updateStats();
+            showAlert('Lista de túneis atualizada!', 'success');
+        }
+        
+        function logout() {
+            if (confirm('Tem certeza que deseja sair?')) {
+                localStorage.removeItem('authToken');
+                window.location.href = '/login';
+            }
+        }
+        
+        function getStatusClass(isActive) {
+            if (isActive === null) return 'status-pending';
+            return isActive ? 'status-active' : 'status-inactive';
+        }
+        
+        function getStatusText(isActive) {
+            if (isActive === null) return 'Pendente';
+            return isActive ? 'Ativo' : 'Inativo';
+        }
+        
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('pt-BR') + ' ' + date.toLocaleTimeString('pt-BR');
+        }
+        
+        function showAlert(message, type) {
+            const alertDiv = document.getElementById('alert');
+            alertDiv.innerHTML = `<div class="alert alert-${type}">${message}</div>`;
+            
+            setTimeout(() => {
+                alertDiv.innerHTML = '';
+            }, 5000);
+        }
+    </script>
+</body>
+</html>

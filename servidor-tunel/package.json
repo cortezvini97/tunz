@@ -1,0 +1,43 @@
+{
+  "name": "servidor-tunel",
+  "version": "1.0.0",
+  "description": "Servidor de túnel para conectar aplicações locais",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
+    "db:create": "node src/database/create-database.js",
+    "db:drop": "node src/database/drop-database.js",
+    "db:migrate": "node src/database/migrate.js",
+    "db:migrations": "node src/database/run-migrations.js",
+    "db:seed": "node src/database/seed.js",
+    "setup": "npm run db:create && npm run db:migrate && npm run db:migrations && npm run db:seed",
+    "reset": "npm run db:drop && npm run db:create && npm run db:migrate && npm run db:migrations && npm run db:seed"
+  },
+  "dependencies": {
+    "bcrypt": "^5.1.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.21.2",
+    "http-proxy-middleware": "^2.0.6",
+    "jsonwebtoken": "^9.0.2",
+    "mysql2": "^3.6.0",
+    "nodemailer": "^7.0.3",
+    "qrcode": "^1.5.4",
+    "sequelize": "^6.32.1",
+    "socket.io": "^4.7.2",
+    "speakeasy": "^2.0.0",
+    "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  },
+  "keywords": [
+    "tunnel",
+    "proxy",
+    "ngrok",
+    "local-development"
+  ],
+  "author": "",
+  "license": "MIT"
+}

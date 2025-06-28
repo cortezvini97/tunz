@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Tunz</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f8f9fa;
+            color: #333;
+        }
+        
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .navbar-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .navbar h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+        
+        .navbar-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: rgba(255,255,255,0.1);
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+        
+        .btn-nav {
+            padding: 0.5rem 1rem;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            text-decoration: none;
+            transition: background 0.3s ease;
+        }
+        
+        .btn-nav:hover {
+            background: rgba(255,255,255,0.3);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+        
+        .welcome-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        
+        .welcome-card h2 {
+            color: #333;
+            margin-bottom: 1rem;
+            font-size: 2rem;
+        }
+        
+        .welcome-card p {
+            color: #666;
+            font-size: 1.1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        .status-active {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .status-inactive {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .card-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1.5rem;
+            text-align: center;
+        }
+        
+        .card-header h3 {
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .card-header p {
+            opacity: 0.9;
+        }
+        
+        .card-body {
+            padding: 2rem;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+        }
+        
+        .btn-secondary:hover {
+            background: #5a6268;
+            box-shadow: 0 5px 15px rgba(108, 117, 125, 0.3);
+        }
+        
+        .feature-list {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .feature-list li {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .feature-list li:last-child {
+            border-bottom: none;
+        }
+        
+        .feature-list .icon {
+            color: #28a745;
+            font-weight: bold;
+        }
+        
+        .alert {
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            font-weight: 500;
+        }
+        
+        .alert-warning {
+            background-color: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+        
+        .alert-info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        
+        .stat-card h3 {
+            font-size: 2rem;
+            color: #667eea;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-card p {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .documentation {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .documentation h3 {
+            color: #333;
+            margin-bottom: 1rem;
+        }
+        
+        .doc-section {
+            margin-bottom: 1.5rem;
+        }
+        
+        .doc-section h4 {
+            color: #667eea;
+            margin-bottom: 0.5rem;
+        }
+        
+        .code-block {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            margin: 0.5rem 0;
+            overflow-x: auto;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 1rem;
+            }
+            
+            .navbar-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .cards-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-content">
+            <h1>🚀 Tunz Dashboard</h1>
+            <div class="navbar-actions">
+                <div class="user-info">
+                    <span>👤</span>
+                    <span id="userName">Carregando...</span>
+                </div>
+                <a href="/profile" class="btn-nav">⚙️ Perfil</a>
+                <button class="btn-nav hidden" onclick="logout()" id="adminBtn">👔 Admin</button>
+                <button class="btn-nav" onclick="logout()">Sair</button>
+            </div>
+        </div>
+    </nav>
+    
+    <div class="container">
+        <div id="alert"></div>
+        
+        <!-- Welcome Card -->
+        <div class="welcome-card">
+            <h2>Bem-vindo, <span id="welcomeName">Usuário</span>!</h2>
+            <p>Status da conta: <span id="accountStatus" class="status-badge">Carregando...</span></p>
+            <p id="accountMessage">Carregando informações da conta...</p>
+        </div>
+        
+        <!-- Account Status Alert -->
+        <div id="statusAlert" class="hidden"></div>
+        
+        <!-- Stats Row -->
+        <div class="stats-row">
+            <div class="stat-card">
+                <h3 id="activeTunnels">0</h3>
+                <p>Túneis Ativos</p>
+            </div>
+            <div class="stat-card">
+                <h3 id="totalTunnels">0</h3>
+                <p>Total de Túneis</p>
+            </div>
+            <div class="stat-card">
+                <h3 id="accountAge">0</h3>
+                <p>Dias de Conta</p>
+            </div>
+        </div>
+        
+        <!-- Main Cards -->
+        <div class="cards-grid">
+            <!-- Cliente Tunz Card -->
+            <div class="card">
+                <div class="card-header">
+                    <h3>💻 Cliente Tunz</h3>
+                    <p>Conecte suas aplicações locais</p>
+                </div>
+                <div class="card-body">
+                    <ul class="feature-list">
+                        <li><span class="icon">✓</span> Túneis HTTP/HTTPS</li>
+                        <li><span class="icon">✓</span> Subdomínios personalizados</li>
+                        <li><span class="icon">✓</span> Suporte a WebSockets</li>
+                        <li><span class="icon">✓</span> Logs em tempo real</li>
+                    </ul>
+                    <br>
+                    <a href="#installation" class="btn">📥 Instruções de Instalação</a>
+                </div>
+            </div>
+            
+            <!-- Minha Conta Card -->
+            <div class="card">
+                <div class="card-header">
+                    <h3>👤 Minha Conta</h3>
+                    <p>Gerencie seu perfil e configurações</p>
+                </div>
+                <div class="card-body">
+                    <ul class="feature-list">
+                        <li><span class="icon">✓</span> Alterar dados pessoais</li>
+                        <li><span class="icon">✓</span> Trocar senha</li>
+                        <li><span class="icon">✓</span> Visualizar atividade</li>
+                        <li><span class="icon">✓</span> Configurações de segurança</li>
+                    </ul>
+                    <br>
+                    <a href="/profile" class="btn">⚙️ Editar Perfil</a>
+                </div>
+            </div>
+            
+            <!-- Suporte Card -->
+            <div class="card">
+                <div class="card-header">
+                    <h3>🎯 Suporte</h3>
+                    <p>Ajuda e documentação</p>
+                </div>
+                <div class="card-body">
+                    <ul class="feature-list">
+                        <li><span class="icon">✓</span> Documentação completa</li>
+                        <li><span class="icon">✓</span> Exemplos práticos</li>
+                        <li><span class="icon">✓</span> Solução de problemas</li>
+                        <li><span class="icon">✓</span> Canal de suporte</li>
+                    </ul>
+                    <br>
+                    <a href="#documentation" class="btn btn-secondary">📚 Ver Documentação</a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Documentation Section -->
+        <div class="documentation" id="documentation">
+            <h3>📚 Documentação</h3>
+            
+            <div class="doc-section" id="installation">
+                <h4>💾 Instalação do Cliente</h4>
+                <p>Para começar a usar o Tunz, instale o cliente em sua máquina:</p>
+                <div class="code-block">
+                    npm install -g tunz-client<br>
+                    # ou<br>
+                    git clone https://github.com/seu-usuario/cliente-tunz.git<br>
+                    cd cliente-tunz<br>
+                    npm install
+                </div>
+            </div>
+            
+            <div class="doc-section">
+                <h4>🚀 Uso Básico</h4>
+                <p>Conecte sua aplicação local ao túnel:</p>
+                <div class="code-block">
+                    # Túnel básico (slug automático)<br>
+                    tunz connect --port 3000<br><br>
+                    # Túnel com slug personalizado<br>
+                    tunz connect --port 3000 --slug meuapp
+                </div>
+            </div>
+            
+            <div class="doc-section">
+                <h4>⚙️ Configurações Avançadas</h4>
+                <p>Opções adicionais de configuração:</p>
+                <div class="code-block">
+                    # Especificar host local<br>
+                    tunz connect --port 3000 --host localhost<br><br>
+                    # Túnel com protocolo específico<br>
+                    tunz connect --port 3000 --protocol http<br><br>
+                    # Ver logs detalhados<br>
+                    tunz connect --port 3000 --verbose
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentUser = null;
+        
+        // Verificar autenticação ao carregar
+        document.addEventListener('DOMContentLoaded', function() {
+            checkAuth();
+        });
+        
+        async function checkAuth() {
+            const token = localStorage.getItem('authToken');
+            
+            if (!token) {
+                window.location.href = '/login';
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/auth/profile', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Token inválido');
+                }
+                
+                const data = await response.json();
+                currentUser = data.user;
+                loadDashboard();
+                
+            } catch (error) {
+                console.error('Erro de autenticação:', error);
+                localStorage.removeItem('authToken');
+                window.location.href = '/login';
+            }
+        }
+        
+        function loadDashboard() {
+            // Atualizar informações do usuário
+            document.getElementById('userName').textContent = currentUser.name;
+            document.getElementById('welcomeName').textContent = currentUser.name;
+            
+            // Atualizar status da conta
+            updateAccountStatus();
+            
+            // Mostrar botão admin se for admin
+            if (currentUser.role === 'admin') {
+                const adminBtn = document.getElementById('adminBtn');
+                adminBtn.classList.remove('hidden');
+                adminBtn.textContent = '👔 Admin';
+                adminBtn.onclick = () => window.location.href = '/admin';
+            }
+            
+            // Calcular estatísticas
+            updateStats();
+        }
+        
+        function updateAccountStatus() {
+            const statusElement = document.getElementById('accountStatus');
+            const messageElement = document.getElementById('accountMessage');
+            const alertElement = document.getElementById('statusAlert');
+            
+            let statusText, statusClass, message, alertMessage = '';
+            
+            if (currentUser.isActive === null) {
+                statusText = 'Pendente';
+                statusClass = 'status-pending';
+                message = 'Sua conta está aguardando aprovação do administrador.';
+                alertMessage = `
+                    <div class="alert alert-warning">
+                        <strong>⏳ Conta Pendente:</strong> Sua conta foi criada com sucesso e está aguardando aprovação.
+                        Você será notificado quando for ativada pelo administrador.
+                    </div>
+                `;
+            } else if (currentUser.isActive === true) {
+                statusText = 'Ativa';
+                statusClass = 'status-active';
+                message = 'Sua conta está ativa e você pode usar todos os recursos.';
+                alertMessage = `
+                    <div class="alert alert-info">
+                        <strong>✅ Conta Ativa:</strong> Sua conta está funcionando normalmente.
+                        Você pode conectar túneis e usar todos os recursos.
+                    </div>
+                `;
+            } else {
+                statusText = 'Desativada';
+                statusClass = 'status-inactive';
+                message = 'Sua conta foi desativada. Entre em contato com o administrador.';
+                alertMessage = `
+                    <div class="alert alert-warning">
+                        <strong>❌ Conta Desativada:</strong> Sua conta foi desativada pelo administrador.
+                        Entre em contato para mais informações.
+                    </div>
+                `;
+            }
+            
+            statusElement.textContent = statusText;
+            statusElement.className = `status-badge ${statusClass}`;
+            messageElement.textContent = message;
+            
+            if (alertMessage) {
+                alertElement.innerHTML = alertMessage;
+                alertElement.classList.remove('hidden');
+            }
+        }
+        
+        function updateStats() {
+            // Calcular dias desde a criação da conta
+            const createdDate = new Date(currentUser.createdAt);
+            const today = new Date();
+            const daysDiff = Math.floor((today - createdDate) / (1000 * 60 * 60 * 24));
+            
+            document.getElementById('accountAge').textContent = daysDiff;
+            
+            // Por enquanto, estatísticas mock - em uma implementação real,
+            // isso viria de uma API que retorna os túneis do usuário
+            document.getElementById('activeTunnels').textContent = '0';
+            document.getElementById('totalTunnels').textContent = '0';
+        }
+        
+        function logout() {
+            if (confirm('Tem certeza que deseja sair?')) {
+                localStorage.removeItem('authToken');
+                window.location.href = '/login';
+            }
+        }
+        
+        function showAlert(message, type) {
+            const alertDiv = document.getElementById('alert');
+            alertDiv.innerHTML = `<div class="alert alert-${type}">${message}</div>`;
+            
+            setTimeout(() => {
+                alertDiv.innerHTML = '';
+            }, 5000);
+        }
+    </script>
+</body>
+</html>

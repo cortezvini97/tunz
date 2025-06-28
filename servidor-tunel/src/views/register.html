@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro - Tunz</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 450px;
+            animation: slideUp 0.5s ease-out;
+        }
+        
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .logo h1 {
+            color: #333;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .logo p {
+            color: #666;
+            font-size: 1rem;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+        }
+        
+        input[type="text"],
+        input[type="email"],
+        input[type="password"] {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e1e1e1;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+        
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            margin-bottom: 15px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+        
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+        
+        .alert-error {
+            background-color: #fee;
+            color: #c33;
+            border: 1px solid #fcc;
+        }
+        
+        .alert-success {
+            background-color: #efe;
+            color: #363;
+            border: 1px solid #cfc;
+        }
+        
+        .alert-warning {
+            background-color: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+        
+        .links {
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        .links a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+            display: inline-block;
+            margin: 5px 0;
+        }
+        
+        .links a:hover {
+            color: #764ba2;
+        }
+        
+        .divider {
+            text-align: center;
+            margin: 20px 0;
+            position: relative;
+            color: #666;
+        }
+        
+        .divider::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: #e1e1e1;
+        }
+        
+        .divider span {
+            background: white;
+            padding: 0 15px;
+        }
+        
+        .password-strength {
+            margin-top: 8px;
+            font-size: 14px;
+        }
+        
+        .strength-bar {
+            width: 100%;
+            height: 4px;
+            background: #e1e1e1;
+            border-radius: 2px;
+            margin-top: 5px;
+            overflow: hidden;
+        }
+        
+        .strength-fill {
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s ease, background-color 0.3s ease;
+            border-radius: 2px;
+        }
+        
+        .strength-weak .strength-fill {
+            background: #ff4757;
+            width: 33%;
+        }
+        
+        .strength-medium .strength-fill {
+            background: #ffa502;
+            width: 66%;
+        }
+        
+        .strength-strong .strength-fill {
+            background: #2ed573;
+            width: 100%;
+        }
+        
+        .loading {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .loading::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            animation: loading 1.5s infinite;
+        }
+        
+        @keyframes loading {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+        
+        .terms {
+            font-size: 12px;
+            color: #666;
+            text-align: center;
+            margin-top: 15px;
+            line-height: 1.4;
+        }
+        
+        .terms a {
+            color: #667eea;
+            text-decoration: none;
+        }
+        
+        .terms a:hover {
+            text-decoration: underline;
+        }
+        
+        @media (max-width: 600px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .container {
+                padding: 30px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">
+            <h1>🚀</h1>
+            <h2>Criar Conta</h2>
+            <p>Junte-se ao Tunz</p>
+        </div>
+        
+        <div id="alert"></div>
+        
+        <form id="registerForm">
+            <div class="form-group">
+                <label for="name">Nome Completo</label>
+                <input type="text" id="name" name="name" required placeholder="Digite seu nome completo">
+            </div>
+            
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" required placeholder="Digite seu email">
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Senha</label>
+                <input type="password" id="password" name="password" required placeholder="Digite uma senha">
+                <div class="password-strength" id="passwordStrength">
+                    <div class="strength-bar">
+                        <div class="strength-fill"></div>
+                    </div>
+                    <span class="strength-text">Digite uma senha</span>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="confirmPassword">Confirmar Senha</label>
+                <input type="password" id="confirmPassword" name="confirmPassword" required 
+                       placeholder="Confirme sua senha">
+            </div>
+            
+            <button type="submit" class="btn" id="registerBtn">
+                Criar Conta
+            </button>
+        </form>
+        
+        <div class="terms">
+            Ao criar uma conta, você concorda com nossos 
+            <a href="#" onclick="showTerms()">Termos de Uso</a> e 
+            <a href="#" onclick="showPrivacy()">Política de Privacidade</a>.
+        </div>
+        
+        <div class="divider">
+            <span>ou</span>
+        </div>
+        
+        <div class="links">
+            <a href="/login">Já tem uma conta? Faça login</a><br>
+            <a href="/home">← Voltar ao início</a>
+        </div>
+    </div>
+
+    <script>
+        // Verificar se já está logado
+        document.addEventListener('DOMContentLoaded', function() {
+            const token = localStorage.getItem('authToken');
+            if (token) {
+                // Verificar se o token é válido
+                fetch('/api/auth/verify', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                })
+                .then(response => {
+                    if (response.ok) {
+                        window.location.href = '/dashboard';
+                    }
+                })
+                .catch(() => {
+                    localStorage.removeItem('authToken');
+                });
+            }
+            
+            setupPasswordStrength();
+        });
+        
+        function setupPasswordStrength() {
+            const passwordInput = document.getElementById('password');
+            const confirmPasswordInput = document.getElementById('confirmPassword');
+            const passwordStrength = document.getElementById('passwordStrength');
+            
+            passwordInput.addEventListener('input', function() {
+                const password = this.value;
+                const strength = calculatePasswordStrength(password);
+                updatePasswordStrength(strength, password.length);
+                validatePasswordMatch();
+            });
+            
+            confirmPasswordInput.addEventListener('input', validatePasswordMatch);
+        }
+        
+        function calculatePasswordStrength(password) {
+            if (password.length < 6) return 'weak';
+            
+            let score = 0;
+            if (password.length >= 8) score++;
+            if (/[A-Z]/.test(password)) score++;
+            if (/[a-z]/.test(password)) score++;
+            if (/[0-9]/.test(password)) score++;
+            if (/[^A-Za-z0-9]/.test(password)) score++;
+            
+            if (score < 3) return 'weak';
+            if (score < 4) return 'medium';
+            return 'strong';
+        }
+        
+        function updatePasswordStrength(strength, length) {
+            const strengthBar = passwordStrength.querySelector('.strength-bar');
+            const strengthText = passwordStrength.querySelector('.strength-text');
+            
+            strengthBar.className = 'strength-bar strength-' + strength;
+            
+            if (length === 0) {
+                strengthText.textContent = 'Digite uma senha';
+            } else if (strength === 'weak') {
+                strengthText.textContent = 'Senha fraca - use pelo menos 8 caracteres';
+            } else if (strength === 'medium') {
+                strengthText.textContent = 'Senha média - adicione símbolos para melhorar';
+            } else {
+                strengthText.textContent = 'Senha forte!';
+            }
+        }
+        
+        function validatePasswordMatch() {
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const confirmInput = document.getElementById('confirmPassword');
+            
+            if (confirmPassword && password !== confirmPassword) {
+                confirmInput.setCustomValidity('As senhas não coincidem');
+            } else {
+                confirmInput.setCustomValidity('');
+            }
+        }
+        
+        // Manipular formulário de registro
+        document.getElementById('registerForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const registerData = {
+                name: formData.get('name'),
+                email: formData.get('email'),
+                password: formData.get('password'),
+                confirmPassword: formData.get('confirmPassword')
+            };
+            
+            // Validações do cliente
+            if (registerData.password !== registerData.confirmPassword) {
+                showAlert('As senhas não coincidem.', 'error');
+                return;
+            }
+            
+            if (registerData.password.length < 6) {
+                showAlert('A senha deve ter pelo menos 6 caracteres.', 'error');
+                return;
+            }
+            
+            const registerBtn = document.getElementById('registerBtn');
+            registerBtn.disabled = true;
+            registerBtn.classList.add('loading');
+            registerBtn.textContent = 'Criando conta...';
+            
+            try {
+                const response = await fetch('/api/auth/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        name: registerData.name,
+                        email: registerData.email,
+                        password: registerData.password
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showAlert('Conta criada com sucesso! Aguarde aprovação do administrador.', 'success');
+                    
+                    // Limpar formulário
+                    document.getElementById('registerForm').reset();
+                    updatePasswordStrength('weak', 0);
+                    
+                    // Mostrar mensagem informativa
+                    setTimeout(() => {
+                        showAlert('Sua conta foi criada e está pendente de aprovação. Você será notificado quando for ativada.', 'warning');
+                    }, 3000);
+                    
+                } else {
+                    showAlert(data.message || 'Erro ao criar conta.', 'error');
+                }
+            } catch (error) {
+                console.error('Erro:', error);
+                showAlert('Erro de conexão. Tente novamente.', 'error');
+            } finally {
+                registerBtn.disabled = false;
+                registerBtn.classList.remove('loading');
+                registerBtn.textContent = 'Criar Conta';
+            }
+        });
+        
+        function showAlert(message, type) {
+            const alertDiv = document.getElementById('alert');
+            alertDiv.innerHTML = `<div class="alert alert-${type}">${message}</div>`;
+            
+            // Auto-hide success messages
+            if (type === 'success') {
+                setTimeout(() => {
+                    alertDiv.innerHTML = '';
+                }, 8000);
+            }
+        }
+        
+        function showTerms() {
+            alert('Termos de Uso:\n\n1. Use o serviço de forma responsável\n2. Não compartilhe suas credenciais\n3. Respeite os limites de uso\n4. Reporte problemas de segurança\n\nEste é um exemplo básico dos termos.');
+        }
+        
+        function showPrivacy() {
+            alert('Política de Privacidade:\n\n1. Coletamos apenas dados necessários\n2. Não vendemos suas informações\n3. Usamos criptografia para proteção\n4. Você pode solicitar exclusão dos dados\n\nEste é um exemplo básico da política.');
+        }
+    </script>
+</body>
+</html>

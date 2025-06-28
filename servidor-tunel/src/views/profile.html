@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meu Perfil - Tunz</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f8f9fa;
+            color: #333;
+        }
+        
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .navbar-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .navbar h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+        
+        .navbar-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+        
+        .btn-nav {
+            padding: 0.5rem 1rem;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            text-decoration: none;
+            transition: background 0.3s ease;
+        }
+        
+        .btn-nav:hover {
+            background: rgba(255,255,255,0.3);
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+        
+        .profile-header {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: white;
+            margin: 0 auto 1rem;
+        }
+        
+        .profile-header h2 {
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+        
+        .profile-header p {
+            color: #666;
+            font-size: 1.1rem;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 0.3rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-top: 0.5rem;
+        }
+        
+        .status-active {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .status-inactive {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+            margin-bottom: 2rem;
+        }
+        
+        .card-header {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .card-header h3 {
+            font-size: 1.3rem;
+            color: #333;
+            margin: 0;
+        }
+        
+        .card-body {
+            padding: 2rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #333;
+            font-weight: 500;
+        }
+        
+        input[type="text"],
+        input[type="email"],
+        input[type="password"] {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e1e1e1;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+        
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+        
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .alert {
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            font-weight: 500;
+        }
+        
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .alert-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .alert-warning {
+            background-color: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+        
+        .password-strength {
+            margin-top: 0.5rem;
+            font-size: 14px;
+        }
+        
+        .strength-bar {
+            width: 100%;
+            height: 4px;
+            background: #e1e1e1;
+            border-radius: 2px;
+            margin-top: 5px;
+            overflow: hidden;
+        }
+        
+        .strength-fill {
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s ease, background-color 0.3s ease;
+            border-radius: 2px;
+        }
+        
+        .strength-weak .strength-fill {
+            background: #ff4757;
+            width: 33%;
+        }
+        
+        .strength-medium .strength-fill {
+            background: #ffa502;
+            width: 66%;
+        }
+        
+        .strength-strong .strength-fill {
+            background: #2ed573;
+            width: 100%;
+        }
+        
+        .form-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            padding-top: 1rem;
+            border-top: 1px solid #e9ecef;
+        }
+        
+        .loading {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .loading::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            animation: loading 1.5s infinite;
+        }
+        
+        @keyframes loading {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 1rem;
+            }
+            
+            .navbar-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-buttons {
+                flex-direction: column;
+            }
+        }
+        
+        .twofa-status {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .status-disabled {
+            color: #dc3545;
+        }
+        
+        .status-enabled {
+            color: #28a745;
+        }
+        
+        .help-text {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+        
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+        
+        .alert-error {
+            background-color: #fee;
+            color: #c33;
+            border: 1px solid #fcc;
+        }
+        
+        .alert-success {
+            background-color: #efe;
+            color: #363;
+            border: 1px solid #cfc;
+        }
+        
+        .alert-warning {
+            background-color: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+        
+        .alert-info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        
+        .help-link {
+            color: #667eea;
+            text-decoration: none;
+        }
+        
+        .help-link:hover {
+            color: #764ba2;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-content">
+            <h1>👤 Meu Perfil</h1>
+            <div class="navbar-actions">
+                <a href="/dashboard" class="btn-nav">📊 Dashboard</a>
+                <button class="btn-nav" onclick="logout()">Sair</button>
+            </div>
+        </div>
+    </nav>
+    
+    <div class="container">
+        <div id="alert"></div>
+        
+        <!-- Profile Header -->
+        <div class="profile-header">
+            <div class="profile-avatar">👤</div>
+            <h2 id="profileName">Carregando...</h2>
+            <p id="profileEmail">Carregando...</p>
+            <span id="profileStatus" class="status-badge">Carregando...</span>
+        </div>
+        
+        <!-- Edit Profile Form -->
+        <div class="card">
+            <div class="card-header">
+                <h3>✏️ Editar Informações</h3>
+            </div>
+            <div class="card-body">
+                <form id="profileForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="name">Nome Completo</label>
+                            <input type="text" id="name" name="name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" id="email" name="email" required>
+                        </div>
+                    </div>
+                    
+                    <!-- Campos 2FA para alteração de perfil -->
+                    <div id="profile2FASection" class="form-group hidden">
+                        <label for="profileTwoFAToken">Código de Autenticação</label>
+                        <input type="text" id="profileTwoFAToken" name="twoFAToken" placeholder="Digite o código do seu app" maxlength="6">
+                        <p class="help-text">
+                            Ou use um <a href="#" id="useProfileBackupCode" class="help-link">código de backup</a>
+                        </p>
+                    </div>
+                    
+                    <div id="profileBackupCodeSection" class="form-group hidden">
+                        <label for="profileBackupCode">Código de Backup</label>
+                        <input type="text" id="profileBackupCode" name="backupCode" placeholder="Digite um código de backup" maxlength="8">
+                        <p class="help-text">
+                            Ou use o <a href="#" id="useProfileAuthCode" class="help-link">app de autenticação</a>
+                        </p>
+                    </div>
+                    
+                    <div class="form-buttons">
+                        <button type="button" class="btn btn-secondary" onclick="resetProfileForm()">Cancelar</button>
+                        <button type="submit" class="btn btn-primary" id="profileSubmitBtn">Salvar Alterações</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Change Password Form -->
+        <div class="card">
+            <div class="card-header">
+                <h3>🔐 Alterar Senha</h3>
+            </div>
+            <div class="card-body">
+                <form id="passwordForm">
+                    <div class="form-group">
+                        <label for="currentPassword">Senha Atual</label>
+                        <input type="password" id="currentPassword" name="currentPassword" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="newPassword">Nova Senha</label>
+                        <input type="password" id="newPassword" name="newPassword" required>
+                        <div class="password-strength" id="passwordStrength">
+                            <div class="strength-bar">
+                                <div class="strength-fill"></div>
+                            </div>
+                            <span class="strength-text">Digite uma nova senha</span>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="confirmNewPassword">Confirmar Nova Senha</label>
+                        <input type="password" id="confirmNewPassword" name="confirmNewPassword" required>
+                    </div>
+                    
+                    <!-- Campos 2FA para alteração de senha -->
+                    <div id="password2FASection" class="form-group hidden">
+                        <label for="passwordTwoFAToken">Código de Autenticação</label>
+                        <input type="text" id="passwordTwoFAToken" name="twoFAToken" placeholder="Digite o código do seu app" maxlength="6">
+                        <p class="help-text">
+                            Ou use um <a href="#" id="usePasswordBackupCode" class="help-link">código de backup</a>
+                        </p>
+                    </div>
+                    
+                    <div id="passwordBackupCodeSection" class="form-group hidden">
+                        <label for="passwordBackupCode">Código de Backup</label>
+                        <input type="text" id="passwordBackupCode" name="backupCode" placeholder="Digite um código de backup" maxlength="8">
+                        <p class="help-text">
+                            Ou use o <a href="#" id="usePasswordAuthCode" class="help-link">app de autenticação</a>
+                        </p>
+                    </div>
+                    
+                    <div class="form-buttons">
+                        <button type="button" class="btn btn-secondary" onclick="resetPasswordForm()">Cancelar</button>
+                        <button type="submit" class="btn btn-primary" id="passwordSubmitBtn">Alterar Senha</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- 2FA Security -->
+        <div class="card">
+            <div class="card-header">
+                <h3>🔐 Autenticação de Dois Fatores</h3>
+            </div>
+            <div class="card-body">
+                <div class="twofa-status">
+                    <div>
+                        <h4>Status: <span id="2faStatus" class="status-disabled">Desabilitado</span></h4>
+                        <p class="help-text">Adicione uma camada extra de segurança à sua conta</p>
+                    </div>
+                    <a href="/2fa" class="btn btn-primary">Configurar 2FA</a>
+                </div>
+                <p class="help-text">
+                    O 2FA protege sua conta mesmo se alguém descobrir sua senha.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentUser = null;
+        
+        // Verificar autenticação ao carregar
+        document.addEventListener('DOMContentLoaded', function() {
+            checkAuth();
+            setupPasswordStrength();
+            load2FAStatus();
+        });
+        
+        async function checkAuth() {
+            const token = localStorage.getItem('authToken');
+            
+            if (!token) {
+                window.location.href = '/login';
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/auth/profile', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Token inválido');
+                }
+                
+                const data = await response.json();
+                currentUser = data.user;
+                loadProfile();
+                
+            } catch (error) {
+                console.error('Erro de autenticação:', error);
+                localStorage.removeItem('authToken');
+                window.location.href = '/login';
+            }
+        }
+        
+        function loadProfile() {
+            // Atualizar header do perfil
+            document.getElementById('profileName').textContent = currentUser.name;
+            document.getElementById('profileEmail').textContent = currentUser.email;
+            
+            const statusElement = document.getElementById('profileStatus');
+            const statusText = getStatusText(currentUser.isActive);
+            const statusClass = getStatusClass(currentUser.isActive);
+            
+            statusElement.textContent = statusText;
+            statusElement.className = `status-badge ${statusClass}`;
+            
+            // Preencher formulário
+            document.getElementById('name').value = currentUser.name;
+            document.getElementById('email').value = currentUser.email;
+        }
+
+        async function load2FAStatus() {
+            try {
+                const token = localStorage.getItem('authToken');
+                const response = await fetch('/api/2fa/status', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    const statusElement = document.getElementById('2faStatus');
+                    
+                    if (data.enabled) {
+                        statusElement.textContent = 'Habilitado';
+                        statusElement.className = 'status-enabled';
+                    } else {
+                        statusElement.textContent = 'Desabilitado';
+                        statusElement.className = 'status-disabled';
+                    }
+                }
+            } catch (error) {
+                console.error('Erro ao carregar status 2FA:', error);
+            }
+        }
+        
+        function setupPasswordStrength() {
+            const newPasswordInput = document.getElementById('newPassword');
+            const confirmPasswordInput = document.getElementById('confirmNewPassword');
+            const passwordStrength = document.getElementById('passwordStrength');
+            
+            newPasswordInput.addEventListener('input', function() {
+                const password = this.value;
+                const strength = calculatePasswordStrength(password);
+                updatePasswordStrength(strength, password.length);
+                validatePasswordMatch();
+            });
+            
+            confirmPasswordInput.addEventListener('input', validatePasswordMatch);
+        }
+        
+        function calculatePasswordStrength(password) {
+            if (password.length < 6) return 'weak';
+            
+            let score = 0;
+            if (password.length >= 8) score++;
+            if (/[A-Z]/.test(password)) score++;
+            if (/[a-z]/.test(password)) score++;
+            if (/[0-9]/.test(password)) score++;
+            if (/[^A-Za-z0-9]/.test(password)) score++;
+            
+            if (score < 3) return 'weak';
+            if (score < 4) return 'medium';
+            return 'strong';
+        }
+        
+        function updatePasswordStrength(strength, length) {
+            const strengthBar = document.querySelector('#passwordStrength .strength-bar');
+            const strengthText = document.querySelector('#passwordStrength .strength-text');
+            
+            strengthBar.className = 'strength-bar strength-' + strength;
+            
+            if (length === 0) {
+                strengthText.textContent = 'Digite uma nova senha';
+            } else if (strength === 'weak') {
+                strengthText.textContent = 'Senha fraca - use pelo menos 8 caracteres';
+            } else if (strength === 'medium') {
+                strengthText.textContent = 'Senha média - adicione símbolos para melhorar';
+            } else {
+                strengthText.textContent = 'Senha forte!';
+            }
+        }
+        
+        function validatePasswordMatch() {
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmNewPassword').value;
+            const confirmInput = document.getElementById('confirmNewPassword');
+            
+            if (confirmPassword && newPassword !== confirmPassword) {
+                confirmInput.setCustomValidity('As senhas não coincidem');
+            } else {
+                confirmInput.setCustomValidity('');
+            }
+        }
+        
+        // Manipular formulário de perfil
+        document.getElementById('profileForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const data = {
+                name: formData.get('name'),
+                email: formData.get('email')
+            };
+            
+            // Adicionar token 2FA se disponível
+            const twoFAToken = formData.get('twoFAToken');
+            const backupCode = formData.get('backupCode');
+            
+            if (twoFAToken && twoFAToken.trim()) {
+                data.twoFAToken = twoFAToken.trim();
+            }
+            
+            if (backupCode && backupCode.trim()) {
+                data.backupCode = backupCode.trim();
+            }
+            
+            const submitBtn = document.getElementById('profileSubmitBtn');
+            submitBtn.disabled = true;
+            submitBtn.classList.add('loading');
+            submitBtn.textContent = 'Salvando...';
+            
+            try {
+                const token = localStorage.getItem('authToken');
+                const response = await fetch('/api/auth/profile', {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+
+                
+                if (response.ok && response.status === 200) {
+                    currentUser = result.user;
+                    loadProfile();
+                    showAlert('Perfil atualizado com sucesso!', 'success');
+                    hideProfile2FASections();
+                } else if (response.status === 202 && result.requiresTwoFA) {
+                    console.log('2FA solicitado para alteração de perfil');
+                    showProfile2FASection();
+                    showAlert('Digite o código de autenticação do seu aplicativo', 'info');
+                } else {
+                    showAlert(result.message || 'Erro ao atualizar perfil.', 'error');
+                    hideProfile2FASections();
+                }
+            } catch (error) {
+                console.error('Erro:', error);
+                showAlert('Erro de conexão. Tente novamente.', 'error');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.classList.remove('loading');
+                submitBtn.textContent = 'Salvar Alterações';
+            }
+        });
+        
+        // Manipular formulário de senha
+        document.getElementById('passwordForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const currentPassword = formData.get('currentPassword');
+            const newPassword = formData.get('newPassword');
+            const confirmNewPassword = formData.get('confirmNewPassword');
+            
+            if (newPassword !== confirmNewPassword) {
+                showAlert('As senhas não coincidem.', 'error');
+                return;
+            }
+            
+            if (newPassword.length < 6) {
+                showAlert('A nova senha deve ter pelo menos 6 caracteres.', 'error');
+                return;
+            }
+            
+            const data = {
+                currentPassword,
+                newPassword
+            };
+            
+            // Adicionar token 2FA se disponível
+            const twoFAToken = formData.get('twoFAToken');
+            const backupCode = formData.get('backupCode');
+            
+            if (twoFAToken && twoFAToken.trim()) {
+                data.twoFAToken = twoFAToken.trim();
+            }
+            
+            if (backupCode && backupCode.trim()) {
+                data.backupCode = backupCode.trim();
+            }
+            
+            const submitBtn = document.getElementById('passwordSubmitBtn');
+            submitBtn.disabled = true;
+            submitBtn.classList.add('loading');
+            submitBtn.textContent = 'Alterando...';
+            
+            try {
+                const token = localStorage.getItem('authToken');
+                const response = await fetch('/api/auth/change-password', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok && result.status === 200) {
+                    showAlert('Senha alterada com sucesso!', 'success');
+                    resetPasswordForm();
+                    hidePassword2FASections();
+                } else if (response.status === 202 && result.requiresTwoFA) {
+                    console.log('2FA solicitado para alteração de senha');
+                    showPassword2FASection();
+                    showAlert('Digite o código de autenticação do seu aplicativo', 'info');
+                } else {
+                    showAlert(result.message || 'Erro ao alterar senha.', 'error');
+                    hidePassword2FASections();
+                }
+            } catch (error) {
+                console.error('Erro:', error);
+                showAlert('Erro de conexão. Tente novamente.', 'error');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.classList.remove('loading');
+                submitBtn.textContent = 'Alterar Senha';
+            }
+        });
+        
+        function resetProfileForm() {
+            loadProfile();
+            hideProfile2FASections();
+            showAlert('Alterações canceladas.', 'warning');
+        }
+        
+        function resetPasswordForm() {
+            document.getElementById('passwordForm').reset();
+            updatePasswordStrength('weak', 0);
+            hidePassword2FASections();
+        }
+        
+        function logout() {
+            if (confirm('Tem certeza que deseja sair?')) {
+                localStorage.removeItem('authToken');
+                window.location.href = '/login';
+            }
+        }
+        
+        function getStatusClass(isActive) {
+            if (isActive === null) return 'status-pending';
+            return isActive ? 'status-active' : 'status-inactive';
+        }
+        
+        function getStatusText(isActive) {
+            if (isActive === null) return 'Pendente de Aprovação';
+            return isActive ? 'Conta Ativa' : 'Conta Desativada';
+        }
+        
+        function showAlert(message, type) {
+            const alertDiv = document.getElementById('alert');
+            alertDiv.innerHTML = `<div class="alert alert-${type}">${message}</div>`;
+            
+            setTimeout(() => {
+                alertDiv.innerHTML = '';
+            }, 5000);
+        }
+        
+        // Funções para controlar campos 2FA do perfil
+        function showProfile2FASection() {
+            document.getElementById('profile2FASection').classList.remove('hidden');
+            document.getElementById('profileBackupCodeSection').classList.add('hidden');
+            document.getElementById('profileTwoFAToken').focus();
+            document.getElementById('profileBackupCode').value = '';
+        }
+        
+        function showProfileBackupCodeSection() {
+            document.getElementById('profileBackupCodeSection').classList.remove('hidden');
+            document.getElementById('profile2FASection').classList.add('hidden');
+            document.getElementById('profileBackupCode').focus();
+            document.getElementById('profileTwoFAToken').value = '';
+        }
+        
+        function hideProfile2FASections() {
+            document.getElementById('profile2FASection').classList.add('hidden');
+            document.getElementById('profileBackupCodeSection').classList.add('hidden');
+            document.getElementById('profileTwoFAToken').value = '';
+            document.getElementById('profileBackupCode').value = '';
+        }
+        
+        // Funções para controlar campos 2FA da senha
+        function showPassword2FASection() {
+            document.getElementById('password2FASection').classList.remove('hidden');
+            document.getElementById('passwordBackupCodeSection').classList.add('hidden');
+            document.getElementById('passwordTwoFAToken').focus();
+            document.getElementById('passwordBackupCode').value = '';
+        }
+        
+        function showPasswordBackupCodeSection() {
+            document.getElementById('passwordBackupCodeSection').classList.remove('hidden');
+            document.getElementById('password2FASection').classList.add('hidden');
+            document.getElementById('passwordBackupCode').focus();
+            document.getElementById('passwordTwoFAToken').value = '';
+        }
+        
+        function hidePassword2FASections() {
+            document.getElementById('password2FASection').classList.add('hidden');
+            document.getElementById('passwordBackupCodeSection').classList.add('hidden');
+            document.getElementById('passwordTwoFAToken').value = '';
+            document.getElementById('passwordBackupCode').value = '';
+        }
+        
+        // Event listeners para alternar entre 2FA e backup codes
+        document.addEventListener('DOMContentLoaded', function() {
+            // Perfil
+            document.getElementById('useProfileBackupCode').addEventListener('click', function(e) {
+                e.preventDefault();
+                showProfileBackupCodeSection();
+            });
+            
+            document.getElementById('useProfileAuthCode').addEventListener('click', function(e) {
+                e.preventDefault();
+                showProfile2FASection();
+            });
+            
+            // Senha
+            document.getElementById('usePasswordBackupCode').addEventListener('click', function(e) {
+                e.preventDefault();
+                showPasswordBackupCodeSection();
+            });
+            
+            document.getElementById('usePasswordAuthCode').addEventListener('click', function(e) {
+                e.preventDefault();
+                showPassword2FASection();
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configuração 2FA - Tunz</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            padding: 15px 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .header h1 {
+            color: #333;
+        }
+        
+        .nav-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: #f8f9fa;
+            color: #333;
+            border: 1px solid #dee2e6;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        
+        .card h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+        
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+        
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .alert-warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+        
+        .alert-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+        }
+        
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e1e1e1;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+        
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .qr-container {
+            text-align: center;
+            margin: 20px 0;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        
+        .qr-container img {
+            max-width: 200px;
+            margin: 10px 0;
+        }
+        
+        .backup-codes {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        
+        .backup-codes h4 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+        
+        .codes-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .backup-code {
+            background: white;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-weight: bold;
+            text-align: center;
+            border: 1px solid #dee2e6;
+        }
+        
+        .status-card {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .status-info h3 {
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .status-enabled {
+            color: #28a745;
+            font-weight: bold;
+        }
+        
+        .status-disabled {
+            color: #dc3545;
+            font-weight: bold;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .loading {
+            opacity: 0.7;
+            pointer-events: none;
+        }
+        
+        .step {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 2px solid #e1e1e1;
+            border-radius: 8px;
+        }
+        
+        .step h3 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+        
+        .step-number {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            background: #667eea;
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 30px;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        
+        .manual-key {
+            text-align: center;
+            font-family: monospace;
+        }
+        
+        .warning-text {
+            color: #dc3545;
+            margin-bottom: 20px;
+        }
+        
+        .btn-danger {
+            background: #dc3545;
+        }
+        
+        .caution-text {
+            color: #856404;
+            margin-bottom: 20px;
+        }
+        
+        .app-list {
+            margin: 10px 0 0 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🔐 Autenticação de Dois Fatores</h1>
+        <div class="nav-buttons">
+            <a href="/profile" class="btn btn-secondary">← Voltar ao Perfil</a>
+            <a href="#" onclick="logout()" class="btn btn-secondary">Sair</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <div id="alert"></div>
+
+        <!-- Status atual do 2FA -->
+        <div class="card">
+            <div class="status-card">
+                <div class="status-info">
+                    <h3>Status do 2FA</h3>
+                    <p id="statusText" class="status-disabled">Desabilitado</p>
+                    <p><small id="backupCodesInfo">Códigos de backup: 0</small></p>
+                </div>
+                <div>
+                    <button id="toggleBtn" class="btn btn-primary" onclick="toggle2FA()">
+                        Habilitar 2FA
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Seção para habilitar 2FA -->
+        <div id="enableSection" class="card hidden">
+            <h2>Configurar Autenticação de Dois Fatores</h2>
+            
+            <div class="step">
+                <h3><span class="step-number">1</span>Instale um aplicativo de autenticação</h3>
+                <p>Instale um destes aplicativos no seu smartphone:</p>
+                <ul class="app-list">
+                    <li>Google Authenticator</li>
+                    <li>Microsoft Authenticator</li>
+                    <li>Authy</li>
+                    <li>1Password</li>
+                </ul>
+            </div>
+
+            <div class="step">
+                <h3><span class="step-number">2</span>Escaneie o código QR</h3>
+                <div class="qr-container">
+                    <p>Escaneie este código QR com seu aplicativo de autenticação:</p>
+                    <div id="qrCode"></div>
+                    <p><strong>Ou digite manualmente:</strong></p>
+                    <input type="text" id="manualKey" readonly class="manual-key">
+                </div>
+            </div>
+
+            <div class="step">
+                <h3><span class="step-number">3</span>Digite o código de verificação</h3>
+                <form id="enable2FAForm">
+                    <div class="form-group">
+                        <label for="verificationCode">Código de 6 dígitos do app:</label>
+                        <input type="text" id="verificationCode" maxlength="6" placeholder="000000" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Habilitar 2FA</button>
+                    <button type="button" class="btn btn-secondary" onclick="cancelSetup()">Cancelar</button>
+                </form>
+            </div>
+
+            <div id="backupCodesSection" class="backup-codes hidden">
+                <h4>⚠️ Códigos de Backup - SALVE ESTES CÓDIGOS!</h4>
+                <p>Use estes códigos se você perder acesso ao seu aplicativo de autenticação. Cada código pode ser usado apenas uma vez.</p>
+                <div id="backupCodesDisplay" class="codes-grid"></div>
+                <p><strong>Baixe ou imprima estes códigos e guarde-os em local seguro!</strong></p>
+            </div>
+        </div>
+
+        <!-- Seção para desabilitar 2FA -->
+        <div id="disableSection" class="card hidden">
+            <h2>Desabilitar Autenticação de Dois Fatores</h2>
+            <p class="warning-text">
+                <strong>⚠️ Atenção:</strong> Desabilitar o 2FA reduzirá a segurança da sua conta.
+            </p>
+            
+            <form id="disable2FAForm">
+                <div class="form-group">
+                    <label for="currentPassword">Senha atual:</label>
+                    <input type="password" id="currentPassword" required>
+                </div>
+                <div class="form-group">
+                    <label for="disableCode">Código de autenticação:</label>
+                    <input type="text" id="disableCode" maxlength="6" placeholder="000000" required>
+                </div>
+                <button type="submit" class="btn btn-primary btn-danger">Desabilitar 2FA</button>
+                <button type="button" class="btn btn-secondary" onclick="cancelDisable()">Cancelar</button>
+            </form>
+        </div>
+
+        <!-- Seção para regenerar códigos de backup -->
+        <div id="regenerateSection" class="card hidden">
+            <h2>Regenerar Códigos de Backup</h2>
+            <p class="caution-text">
+                <strong>⚠️ Atenção:</strong> Isto invalidará todos os códigos de backup existentes.
+            </p>
+            
+            <form id="regenerateForm">
+                <div class="form-group">
+                    <label for="regeneratePassword">Senha atual:</label>
+                    <input type="password" id="regeneratePassword" required>
+                </div>
+                <div class="form-group">
+                    <label for="regenerateCode">Código de autenticação (opcional):</label>
+                    <input type="text" id="regenerateCode" maxlength="6" placeholder="000000">
+                </div>
+                <button type="submit" class="btn btn-primary">Regenerar Códigos</button>
+                <button type="button" class="btn btn-secondary" onclick="cancelRegenerate()">Cancelar</button>
+            </form>
+
+            <div id="newBackupCodes" class="backup-codes hidden">
+                <h4>Novos Códigos de Backup</h4>
+                <div id="newBackupCodesDisplay" class="codes-grid"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentSecret = null;
+        let is2FAEnabled = false;
+
+        // Carregar status do 2FA ao carregar a página
+        document.addEventListener('DOMContentLoaded', function() {
+            load2FAStatus();
+        });
+
+        async function load2FAStatus() {
+            try {
+                const token = localStorage.getItem('authToken');
+                const response = await fetch('/api/2fa/status', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    is2FAEnabled = data.enabled;
+                    updateUI();
+                    
+                    const backupCodesInfo = document.getElementById('backupCodesInfo');
+                    backupCodesInfo.textContent = `Códigos de backup: ${data.backupCodesCount || 0}`;
+                } else {
+                    showAlert('Erro ao carregar status do 2FA', 'error');
+                }
+            } catch (error) {
+                console.error('Erro:', error);
+                showAlert('Erro de conexão', 'error');
+            }
+        }
+
+        function updateUI() {
+            const statusText = document.getElementById('statusText');
+            const toggleBtn = document.getElementById('toggleBtn');
+            
+            if (is2FAEnabled) {
+                statusText.textContent = 'Habilitado';
+                statusText.className = 'status-enabled';
+                toggleBtn.textContent = 'Gerenciar 2FA';
+                toggleBtn.onclick = show2FAManagement;
+            } else {
+                statusText.textContent = 'Desabilitado';
+                statusText.className = 'status-disabled';
+                toggleBtn.textContent = 'Habilitar 2FA';
+                toggleBtn.onclick = setup2FA;
+            }
+        }
+
+        async function setup2FA() {
+            try {
+                showAlert('Gerando QR Code...', 'info');
+                
+                const token = localStorage.getItem('authToken');
+                const response = await fetch('/api/2fa/setup', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    currentSecret = data.secret;
+                    
+                    // Mostrar QR Code
+                    document.getElementById('qrCode').innerHTML = `<img src="${data.qrCode}" alt="QR Code">`;
+                    document.getElementById('manualKey').value = data.manualEntryKey;
+                    
+                    document.getElementById('enableSection').classList.remove('hidden');
+                    showAlert('Escaneie o QR Code com seu aplicativo de autenticação', 'info');
+                } else {
+                    const errorData = await response.json();
+                    showAlert(errorData.error || 'Erro ao gerar QR Code', 'error');
+                }
+            } catch (error) {
+                console.error('Erro:', error);
+                showAlert('Erro de conexão', 'error');
+            }
+        }
+
+        function show2FAManagement() {
+            document.getElementById('disableSection').classList.remove('hidden');
+            document.getElementById('regenerateSection').classList.remove('hidden');
+        }
+
+        function cancelSetup() {
+            document.getElementById('enableSection').classList.add('hidden');
+            document.getElementById('enable2FAForm').reset();
+            currentSecret = null;
+        }
+
+        function cancelDisable() {
+            document.getElementById('disableSection').classList.add('hidden');
+            document.getElementById('disable2FAForm').reset();
+        }
+
+        function cancelRegenerate() {
+            document.getElementById('regenerateSection').classList.add('hidden');
+            document.getElementById('regenerateForm').reset();
+            document.getElementById('newBackupCodes').classList.add('hidden');
+        }
+
+        // Form handlers
+        document.getElementById('enable2FAForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const verificationCode = document.getElementById('verificationCode').value;
+            
+            if (!currentSecret || !verificationCode) {
+                showAlert('Código de verificação é obrigatório', 'error');
+                return;
+            }
+
+            try {
+                const token = localStorage.getItem('authToken');
+                const response = await fetch('/api/2fa/enable', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        secret: currentSecret,
+                        token: verificationCode
+                    })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    showAlert('2FA habilitado com sucesso!', 'success');
+                    
+                    // Mostrar códigos de backup
+                    if (data.backupCodes && data.backupCodes.length > 0) {
+                        displayBackupCodes(data.backupCodes, 'backupCodesDisplay');
+                        document.getElementById('backupCodesSection').classList.remove('hidden');
+                    }
+                    
+                    is2FAEnabled = true;
+                    updateUI();
+                    
+                    setTimeout(() => {
+                        cancelSetup();
+                        document.getElementById('backupCodesSection').classList.add('hidden');
+                    }, 10000);
+                } else {
+                    const errorData = await response.json();
+                    showAlert(errorData.error || 'Código inválido', 'error');
+                }
+            } catch (error) {
+                console.error('Erro:', error);
+                showAlert('Erro de conexão', 'error');
+            }
+        });
+
+        document.getElementById('disable2FAForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const password = document.getElementById('currentPassword').value;
+            const token = document.getElementById('disableCode').value;
+
+            try {
+                const authToken = localStorage.getItem('authToken');
+                const response = await fetch('/api/2fa/disable', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ password, token })
+                });
+
+                if (response.ok) {
+                    showAlert('2FA desabilitado com sucesso!', 'success');
+                    is2FAEnabled = false;
+                    updateUI();
+                    cancelDisable();
+                    document.getElementById('regenerateSection').classList.add('hidden');
+                } else {
+                    const errorData = await response.json();
+                    showAlert(errorData.error || 'Erro ao desabilitar 2FA', 'error');
+                }
+            } catch (error) {
+                console.error('Erro:', error);
+                showAlert('Erro de conexão', 'error');
+            }
+        });
+
+        document.getElementById('regenerateForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const password = document.getElementById('regeneratePassword').value;
+            const token = document.getElementById('regenerateCode').value;
+
+            try {
+                const authToken = localStorage.getItem('authToken');
+                const response = await fetch('/api/2fa/regenerate-backup-codes', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ password, token })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    showAlert('Códigos de backup regenerados!', 'success');
+                    
+                    if (data.backupCodes) {
+                        displayBackupCodes(data.backupCodes, 'newBackupCodesDisplay');
+                        document.getElementById('newBackupCodes').classList.remove('hidden');
+                    }
+                } else {
+                    const errorData = await response.json();
+                    showAlert(errorData.error || 'Erro ao regenerar códigos', 'error');
+                }
+            } catch (error) {
+                console.error('Erro:', error);
+                showAlert('Erro de conexão', 'error');
+            }
+        });
+
+        function displayBackupCodes(codes, containerId) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = codes.map(code => 
+                `<div class="backup-code">${code}</div>`
+            ).join('');
+        }
+
+        function toggle2FA() {
+            if (is2FAEnabled) {
+                show2FAManagement();
+            } else {
+                setup2FA();
+            }
+        }
+
+        function showAlert(message, type) {
+            const alertDiv = document.getElementById('alert');
+            alertDiv.innerHTML = `<div class="alert alert-${type}">${message}</div>`;
+            
+            if (type === 'success' || type === 'info') {
+                setTimeout(() => {
+                    alertDiv.innerHTML = '';
+                }, 5000);
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('authToken');
+            window.location.href = '/login';
+        }
+
+        // Verificar autenticação
+        const token = localStorage.getItem('authToken');
+        if (!token) {
+            window.location.href = '/login';
+        }
+    </script>
+</body>
+</html>

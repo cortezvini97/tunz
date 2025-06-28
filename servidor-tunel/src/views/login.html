@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Tunz</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 400px;
+            animation: slideUp 0.5s ease-out;
+        }
+        
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .logo h1 {
+            color: #333;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .logo p {
+            color: #666;
+            font-size: 1rem;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+        }
+        
+        input[type="email"],
+        input[type="password"],
+        input[type="text"] {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e1e1e1;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+        
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            margin-bottom: 15px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+        
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+        
+        .alert-error {
+            background-color: #fee;
+            color: #c33;
+            border: 1px solid #fcc;
+        }
+        
+        .alert-success {
+            background-color: #efe;
+            color: #363;
+            border: 1px solid #cfc;
+        }
+        
+        .alert-warning {
+            background-color: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+        
+        .alert-info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        
+        .links {
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        .links a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+            display: inline-block;
+            margin: 5px 0;
+        }
+        
+        .links a:hover {
+            color: #764ba2;
+        }
+        
+        .forgot-password {
+            text-align: center;
+            margin-top: 15px;
+        }
+        
+        .forgot-password a {
+            color: #666;
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.3s ease;
+        }
+        
+        .forgot-password a:hover {
+            color: #667eea;
+            text-decoration: underline;
+        }
+        
+        .divider {
+            text-align: center;
+            margin: 20px 0;
+            position: relative;
+            color: #666;
+        }
+        
+        .divider::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: #e1e1e1;
+        }
+        
+        .divider span {
+            background: white;
+            padding: 0 15px;
+        }
+        
+        .loading {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .loading::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            animation: loading 1.5s infinite;
+        }
+        
+        @keyframes loading {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+        
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            animation: fadeIn 0.3s ease-out;
+        }
+        
+        .modal-content {
+            background-color: white;
+            margin: 10% auto;
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 400px;
+            animation: slideUp 0.3s ease-out;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .modal-header h2 {
+            color: #333;
+            font-size: 1.5rem;
+        }
+        
+        .close {
+            color: #999;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            line-height: 1;
+        }
+        
+        .close:hover,
+        .close:focus {
+            color: #333;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+        
+        .help-text {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        .help-link {
+            color: #667eea;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .help-text {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        .help-link {
+            color: #667eea;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">
+            <h1>🚀</h1>
+            <h2>Tunz</h2>
+            <p>Sistema de Túneis</p>
+        </div>
+        
+        <div id="alert"></div>
+        
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" required placeholder="Digite seu email">
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Senha</label>
+                <input type="password" id="password" name="password" required placeholder="Digite sua senha">
+            </div>
+            
+            <div id="twoFASection" class="form-group hidden">
+                <label for="twoFAToken">Código de Autenticação</label>
+                <input type="text" id="twoFAToken" name="twoFAToken" placeholder="Digite o código do seu app" maxlength="6">
+                <p class="help-text">
+                    Ou use um <a href="#" id="useBackupCode" class="help-link">código de backup</a>
+                </p>
+            </div>
+            
+            <div id="backupCodeSection" class="form-group hidden">
+                <label for="backupCode">Código de Backup</label>
+                <input type="text" id="backupCode" name="backupCode" placeholder="Digite um código de backup" maxlength="8">
+                <p class="help-text">
+                    Ou use o <a href="#" id="useAuthCode" class="help-link">app de autenticação</a>
+                </p>
+            </div>
+            
+            <button type="submit" class="btn" id="loginBtn">
+                Entrar
+            </button>
+        </form>
+        
+        <div class="forgot-password">
+            <a href="#" onclick="openForgotPasswordModal()">Esqueceu sua senha?</a>
+        </div>
+        
+        <div class="divider">
+            <span>ou</span>
+        </div>
+        
+        <div class="links">
+            <a href="/register">Criar nova conta</a><br>
+            <a href="/home">← Voltar ao início</a>
+        </div>
+    </div>
+    
+    <!-- Modal de Recuperação de Senha -->
+    <div id="forgotPasswordModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>🔐 Recuperar Senha</h2>
+                <span class="close" onclick="closeForgotPasswordModal()">&times;</span>
+            </div>
+            
+            <div id="forgotAlert"></div>
+            
+            <form id="forgotPasswordForm">
+                <div class="form-group">
+                    <label for="forgotEmail">Email</label>
+                    <input type="email" id="forgotEmail" name="email" required 
+                           placeholder="Digite o email da sua conta">
+                </div>
+                
+                <button type="submit" class="btn" id="forgotBtn">
+                    Enviar Link de Recuperação
+                </button>
+                
+                <div class="links">
+                    <a href="#" onclick="closeForgotPasswordModal()">Cancelar</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Verificar se já está logado
+        document.addEventListener('DOMContentLoaded', function() {
+            const token = localStorage.getItem('authToken');
+            if (token) {
+                // Verificar se o token é válido
+                fetch('/api/auth/verify', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                })
+                .then(response => {
+                    if (response.ok) {
+                        window.location.href = '/dashboard';
+                    }
+                })
+                .catch(() => {
+                    localStorage.removeItem('authToken');
+                });
+            }
+        });
+        
+        // Manipular formulário de login
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const loginData = {
+                email: formData.get('email'),
+                password: formData.get('password')
+            };
+            
+            // Adicionar token 2FA se disponível
+            const twoFAToken = formData.get('twoFAToken');
+            const backupCode = formData.get('backupCode');
+            
+            if (twoFAToken && twoFAToken.trim()) {
+                loginData.twoFAToken = twoFAToken.trim();
+            }
+            
+            if (backupCode && backupCode.trim()) {
+                loginData.backupCode = backupCode.trim();
+            }
+            
+            const loginBtn = document.getElementById('loginBtn');
+            loginBtn.disabled = true;
+            loginBtn.classList.add('loading');
+            loginBtn.textContent = 'Entrando...';
+            
+            try {
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(loginData)
+                });
+                
+                const data = await response.json();
+                console.log('Login response:', { status: response.status, data });
+                
+                if (response.ok && response.status === 200) {
+                    localStorage.setItem('authToken', data.token);
+                    console.log('Token salvo, redirecionando...', data.user);
+                    showAlert('Login realizado com sucesso! Redirecionando...', 'success');
+                    
+                    // Limpar campos 2FA
+                    hide2FASections();
+                    
+                    setTimeout(() => {
+                        // Verificar se data.user existe e tem a propriedade role
+                        const redirectUrl = (data.user && data.user.role === 'admin') ? '/admin' : '/dashboard';
+                        console.log('Dados do usuário:', data.user);
+                        console.log('Redirecionando para:', redirectUrl);
+                        window.location.href = redirectUrl;
+                    }, 1500);
+                } else if (response.status === 202 && data.requiresTwoFA) {
+                    console.log('2FA solicitado');
+                    // Mostrar campos de 2FA
+                    show2FASection();
+                    showAlert('Digite o código de autenticação do seu aplicativo', 'info');
+                } else {
+                    console.log('Erro no login:', data);
+                    showAlert(data.message || 'Erro ao fazer login.', 'error');
+                    // Limpar campos 2FA em caso de erro
+                    hide2FASections();
+                }
+            } catch (error) {
+                console.error('Erro:', error);
+                showAlert('Erro de conexão. Tente novamente.', 'error');
+            } finally {
+                loginBtn.disabled = false;
+                loginBtn.classList.remove('loading');
+                loginBtn.textContent = 'Entrar';
+            }
+        });
+        
+        // Funções para alternar entre 2FA e backup codes
+        document.getElementById('useBackupCode').addEventListener('click', function(e) {
+            e.preventDefault();
+            showBackupCodeSection();
+        });
+        
+        document.getElementById('useAuthCode').addEventListener('click', function(e) {
+            e.preventDefault();
+            show2FASection();
+        });
+        
+        function show2FASection() {
+            document.getElementById('twoFASection').classList.remove('hidden');
+            document.getElementById('backupCodeSection').classList.add('hidden');
+            document.getElementById('twoFAToken').focus();
+            document.getElementById('backupCode').value = '';
+        }
+        
+        function showBackupCodeSection() {
+            document.getElementById('backupCodeSection').classList.remove('hidden');
+            document.getElementById('twoFASection').classList.add('hidden');
+            document.getElementById('backupCode').focus();
+            document.getElementById('twoFAToken').value = '';
+        }
+        
+        function hide2FASections() {
+            document.getElementById('twoFASection').classList.add('hidden');
+            document.getElementById('backupCodeSection').classList.add('hidden');
+            document.getElementById('twoFAToken').value = '';
+            document.getElementById('backupCode').value = '';
+        }
+        
+        // Manipular formulário de recuperação de senha
+        document.getElementById('forgotPasswordForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const email = formData.get('email');
+            
+            const forgotBtn = document.getElementById('forgotBtn');
+            forgotBtn.disabled = true;
+            forgotBtn.classList.add('loading');
+            forgotBtn.textContent = 'Enviando...';
+            
+            try {
+                const response = await fetch('/api/auth/forgot-password', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showForgotAlert('Link de recuperação enviado! Verifique seu email.', 'success');
+                    
+                    // Em desenvolvimento, mostrar o link
+                    if (data.resetLink) {
+                        showForgotAlert(`Link de desenvolvimento: <a href="${data.resetLink}" target="_blank">Clique aqui</a>`, 'warning');
+                    }
+                    
+                    setTimeout(() => {
+                        closeForgotPasswordModal();
+                    }, 5000);
+                } else {
+                    showForgotAlert(data.message || 'Erro ao enviar email de recuperação.', 'error');
+                }
+            } catch (error) {
+                console.error('Erro:', error);
+                showForgotAlert('Erro de conexão. Tente novamente.', 'error');
+            } finally {
+                forgotBtn.disabled = false;
+                forgotBtn.classList.remove('loading');
+                forgotBtn.textContent = 'Enviar Link de Recuperação';
+            }
+        });
+        
+        function openForgotPasswordModal() {
+            document.getElementById('forgotPasswordModal').style.display = 'block';
+            document.getElementById('forgotEmail').focus();
+        }
+        
+        function closeForgotPasswordModal() {
+            document.getElementById('forgotPasswordModal').style.display = 'none';
+            document.getElementById('forgotPasswordForm').reset();
+            document.getElementById('forgotAlert').innerHTML = '';
+        }
+        
+        // Fechar modal ao clicar fora dele
+        window.onclick = function(event) {
+            const modal = document.getElementById('forgotPasswordModal');
+            if (event.target === modal) {
+                closeForgotPasswordModal();
+            }
+        }
+        
+        function showAlert(message, type) {
+            const alertDiv = document.getElementById('alert');
+            alertDiv.innerHTML = `<div class="alert alert-${type}">${message}</div>`;
+            
+            // Auto-hide success messages
+            if (type === 'success') {
+                setTimeout(() => {
+                    alertDiv.innerHTML = '';
+                }, 5000);
+            }
+        }
+        
+        function showForgotAlert(message, type) {
+            const alertDiv = document.getElementById('forgotAlert');
+            alertDiv.innerHTML = `<div class="alert alert-${type}">${message}</div>`;
+            
+            // Auto-hide success messages
+            if (type === 'success') {
+                setTimeout(() => {
+                    alertDiv.innerHTML = '';
+                }, 8000);
+            }
+        }
+    </script>
+</body>
+</html>
