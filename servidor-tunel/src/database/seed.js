@@ -13,6 +13,7 @@ async function seed() {
         password: process.env.ADMIN_PASSWORD,
         name: 'Administrador',
         role: 'admin',
+        isActive: true,
       });
       console.log(`✅ Usuário admin criado: ${process.env.ADMIN_EMAIL}`);
     } else {
